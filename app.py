@@ -12,16 +12,22 @@ import logging
 from logging import Formatter, FileHandler
 from flask_wtf import Form
 from forms import *
+from flask_migrate import Migrate
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
 
+# TODO: connect to a local postgresql database
+
+
 app = Flask(__name__)
+#need to import the flask app from app.py??????????
 moment = Moment(app)
 app.config.from_object('config')
 db = SQLAlchemy(app)
+migrate = Migrate(app,db)
 
-# TODO: connect to a local postgresql database
+
 
 #----------------------------------------------------------------------------#
 # Models.
@@ -75,6 +81,8 @@ app.jinja_env.filters['datetime'] = format_datetime
 # Controllers.
 #----------------------------------------------------------------------------#
 
+db.create_all()
+
 @app.route('/')
 def index():
   return render_template('pages/home.html')
@@ -86,8 +94,9 @@ def index():
 @app.route('/venues')
 def venues():
   # TODO: replace with real venues data.
+  return render_template('pages/venues.html', data = Venue.query.order_by('id').all())
   #       num_shows should be aggregated based on number of upcoming shows per venue.
-  data=[{
+ ''' data=[{
     "city": "San Francisco",
     "state": "CA",
     "venues": [{
@@ -108,7 +117,7 @@ def venues():
       "num_upcoming_shows": 0,
     }]
   }]
-  return render_template('pages/venues.html', areas=data);
+  #return render_template('pages/venues.html', areas=data); '''
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
