@@ -5,7 +5,7 @@
 import json
 import dateutil.parser
 import babel
-from flask import Flask, render_template, request, Response, flash, redirect, url_for
+from flask import Flask, render_template, request, Response, flash, redirect, url_for, jsonify
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 import logging
@@ -96,47 +96,48 @@ def venues():
   # TODO: replace with real venues data.
   return render_template('pages/venues.html', data = Venue.query.order_by('id').all())
   #       num_shows should be aggregated based on number of upcoming shows per venue.
- ''' data=[{
-    "city": "San Francisco",
-    "state": "CA",
-    "venues": [{
-      "id": 1,
-      "name": "The Musical Hop",
-      "num_upcoming_shows": 0,
-    }, {
-      "id": 3,
-      "name": "Park Square Live Music & Coffee",
-      "num_upcoming_shows": 1,
-    }]
-  }, {
-    "city": "New York",
-    "state": "NY",
-    "venues": [{
-      "id": 2,
-      "name": "The Dueling Pianos Bar",
-      "num_upcoming_shows": 0,
-    }]
-  }]
-  #return render_template('pages/venues.html', areas=data); '''
+
+      #above need to look up the redux for finding something LIKE the search term
+    # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
+    # seach for Hop should return "The Musical Hop".
+    # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
+
+      #likeSearch = '%' + search_term + '%'
+      #print("This is the like search result",likeSearch)
+      #response_results = Venue.query.filter_by(Venue.name.like(likeSearch))
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
-  # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
-  # seach for Hop should return "The Musical Hop".
-  # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
-  response={
-    "count": 1,
-    "data": [{
-      "id": 2,
-      "name": "The Dueling Pianos Bar",
-      "num_upcoming_shows": 0,
-    }]
-  }
-  return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
+    #get the search term from the post request body
+    search_term = request.form.get('search_term')
+    # set up the response to have jsonified queries of something like the search term
+#    response_results = Venue.query.filter_by(name=search_term | ))
+
+    #queryArray = search_term.split(" ")
+    #print("the query array is",queryArray)
+
+
+    #response_results = Venue.query.filter(Venue.name.in_(queryArray))
+
+    likeSearch = '%' + search_term + '%'
+    print("This is the like search result",likeSearch)
+    response_results = Venue.query.filter(Venue.name.like(likeSearch))
+
+
+    print("response_results is",response_results)
+
+
+    response={
+    "results": response_results
+    }
+    #jsoned_response= jsonify(response)
+
+    return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
 
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
   # shows the venue page with the given venue_id
+  return render_template('pages/venue')
   # TODO: replace with real venue data from the venues table, using venue_id
   data1={
     "id": 1,
