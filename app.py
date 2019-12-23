@@ -275,58 +275,30 @@ def search_artists():
 
 @app.route('/artists/<int:artist_id>')
 def show_artist(artist_id):
-  # shows the venue page with the given venue_id
-  # TODO: replace with real venue data from the venues table, using venue_id
-  artist_data = Artist.query.get(artist_id)
-
-  data1={
-    "id": arist_data.id,
+    artist_data = Artist.query.get(artist_id)
+    data={
+    "id": artist_data.id,
     "name": artist_data.name,
     "genres": artist_data.genres,
     "city": artist_data.city,
     "state": artist_data.state,
     "phone": artist_data.phone,
-    "website": artist_data.website,
+    #website": artist_data.website,
     "facebook_link": artist_data.facebook_link,
-    "seeking_venue": artist_data.seeking_venue,
-    "seeking_description": artist_data.seeking_description,
-    "image_link": artist_data.image_link,
-    "past_shows": artist_data.past_shows,
-    "upcoming_shows": artist_data.upcoming_shows,
-    "past_shows_count": artist_data.past_shows_count,
-    "upcoming_shows_count": artist_data.upcoming_shows_count,
-  }
-  data3={
-    "id": 6,
-    "name": "The Wild Sax Band",
-    "genres": ["Jazz", "Classical"],
-    "city": "San Francisco",
-    "state": "CA",
-    "phone": "432-325-5432",
-    "seeking_venue": False,
-    "image_link": "https://images.unsplash.com/photo-1558369981-f9ca78462e61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=794&q=80",
-    "past_shows": [],
-    "upcoming_shows": [{
-      "venue_id": 3,
-      "venue_name": "Park Square Live Music & Coffee",
-      "venue_image_link": "https://images.unsplash.com/photo-1485686531765-ba63b07845a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=747&q=80",
-      "start_time": "2035-04-01T20:00:00.000Z"
-    }, {
-      "venue_id": 3,
-      "venue_name": "Park Square Live Music & Coffee",
-      "venue_image_link": "https://images.unsplash.com/photo-1485686531765-ba63b07845a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=747&q=80",
-      "start_time": "2035-04-08T20:00:00.000Z"
-    }, {
-      "venue_id": 3,
-      "venue_name": "Park Square Live Music & Coffee",
-      "venue_image_link": "https://images.unsplash.com/photo-1485686531765-ba63b07845a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=747&q=80",
-      "start_time": "2035-04-15T20:00:00.000Z"
-    }],
-    "past_shows_count": 0,
-    "upcoming_shows_count": 3,
-  }
-  data = list(filter(lambda d: d['id'] == artist_id, [data1, data2, data3]))[0]
-  return render_template('pages/show_artist.html', artist=data)
+    #"seeking_venue": artist_data.seeking_venue,
+    #"seeking_description": artist_data.seeking_description,
+    #"image_link": artist_data.image_link,
+    #"past_shows": artist_data.past_shows,
+    #"upcoming_shows": artist_data.upcoming_shows,
+    #"past_shows_count": artist_data.past_shows_count,
+    #"upcoming_shows_count": artist_data.upcoming_shows_count
+    }
+    return render_template('pages/show_artist.html', artist=data)
+
+
+
+  #ata = list(filter(lambda d: d['id'] == artist_id, [data1, data2, data3]))[0]
+
 
 #  Update
 #  ----------------------------------------------------------------
