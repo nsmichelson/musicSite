@@ -251,7 +251,9 @@ def search_artists():
   search_term = request.form.get('search_term')
   likeSearch = '%' + search_term + '%'
   print("This is the like search result",likeSearch)
-  artist_results = Venue.query.filter(Artist.name.like(likeSearch))
+  artist_results = Artist.query.filter(Artist.name.like(likeSearch))
+
+  print("artist_results is",artist_results)
 
   count = 0
   for item in artist_results:
@@ -260,6 +262,8 @@ def search_artists():
   data = []
   for item in artist_results:
       data.append(item)
+
+  print("This is the data",data)
 #calculate the count - query for a count of artists that match search_term
 #count = db.session.query(func.count())
 #get ids of the artists and export their data
@@ -273,47 +277,24 @@ def search_artists():
 def show_artist(artist_id):
   # shows the venue page with the given venue_id
   # TODO: replace with real venue data from the venues table, using venue_id
+  artist_data = Artist.query.get(artist_id)
+
   data1={
-    "id": 4,
-    "name": "Guns N Petals",
-    "genres": ["Rock n Roll"],
-    "city": "San Francisco",
-    "state": "CA",
-    "phone": "326-123-5000",
-    "website": "https://www.gunsnpetalsband.com",
-    "facebook_link": "https://www.facebook.com/GunsNPetals",
-    "seeking_venue": True,
-    "seeking_description": "Looking for shows to perform at in the San Francisco Bay Area!",
-    "image_link": "https://images.unsplash.com/photo-1549213783-8284d0336c4f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=80",
-    "past_shows": [{
-      "venue_id": 1,
-      "venue_name": "The Musical Hop",
-      "venue_image_link": "https://images.unsplash.com/photo-1543900694-133f37abaaa5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60",
-      "start_time": "2019-05-21T21:30:00.000Z"
-    }],
-    "upcoming_shows": [],
-    "past_shows_count": 1,
-    "upcoming_shows_count": 0,
-  }
-  data2={
-    "id": 5,
-    "name": "Matt Quevedo",
-    "genres": ["Jazz"],
-    "city": "New York",
-    "state": "NY",
-    "phone": "300-400-5000",
-    "facebook_link": "https://www.facebook.com/mattquevedo923251523",
-    "seeking_venue": False,
-    "image_link": "https://images.unsplash.com/photo-1495223153807-b916f75de8c5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
-    "past_shows": [{
-      "venue_id": 3,
-      "venue_name": "Park Square Live Music & Coffee",
-      "venue_image_link": "https://images.unsplash.com/photo-1485686531765-ba63b07845a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=747&q=80",
-      "start_time": "2019-06-15T23:00:00.000Z"
-    }],
-    "upcoming_shows": [],
-    "past_shows_count": 1,
-    "upcoming_shows_count": 0,
+    "id": arist_data.id,
+    "name": artist_data.name,
+    "genres": artist_data.genres,
+    "city": artist_data.city,
+    "state": artist_data.state,
+    "phone": artist_data.phone,
+    "website": artist_data.website,
+    "facebook_link": artist_data.facebook_link,
+    "seeking_venue": artist_data.seeking_venue,
+    "seeking_description": artist_data.seeking_description,
+    "image_link": artist_data.image_link,
+    "past_shows": artist_data.past_shows,
+    "upcoming_shows": artist_data.upcoming_shows,
+    "past_shows_count": artist_data.past_shows_count,
+    "upcoming_shows_count": artist_data.upcoming_shows_count,
   }
   data3={
     "id": 6,
