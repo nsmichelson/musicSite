@@ -44,6 +44,7 @@ class Venue(db.Model):
     phone = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
+    shows = db.relationship('Show', backref="Venue",lazy=True)
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
@@ -58,10 +59,20 @@ class Artist(db.Model):
     genres = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
+    shows = db.relationship('Show', backref="Artist",lazy=True)
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
+
+class Shows(db.Model):
+    __tablename__ = 'Shows'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    venue_id = db.Column(db.Integer, db.ForeignKey(Venue.id), nullable=True)
+    artist_id = db.Column(db.Integer, db.ForeignKey(Artist.id), nullable=True)
+
 
 #----------------------------------------------------------------------------#
 # Filters.
@@ -81,7 +92,7 @@ app.jinja_env.filters['datetime'] = format_datetime
 # Controllers.
 #----------------------------------------------------------------------------#
 
-db.create_all()
+#db.create_all()
 
 @app.route('/')
 def index():
@@ -93,8 +104,10 @@ def index():
 
 @app.route('/venues')
 def venues():
+
+  print(Venue.query.all()[0].city)
   # TODO: replace with real venues data.
-  return render_template('pages/venues.html', data = Venue.query.order_by('id').all())
+  return render_template('pages/venues.html', areas = Venue.query.all())
   #       num_shows should be aggregated based on number of upcoming shows per venue.
 
       #above need to look up the redux for finding something LIKE the search term
@@ -171,10 +184,38 @@ def create_venue_form():
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
   # TODO: insert form data as a new Venue record in the db, instead
+  name = request.form['name']
+  address = request.form['address']
+  print("This is what we are getting as the address",address)
+  phone = request.form['phone']
+  genres = request.form['genres']
+  city = request.form['city']
+  state = request.form['state']
+
+  try:
+      newVenue = Venue()
+      newVenue.name = name
+      print("Venue name is",newVenue.name)
+      newVenue.address = address
+      newVenue.phone = phone
+      newVenue.genres = genres
+      newVenue.city = city
+      newVenue.state = state
+      print("newVenue", newVenue)
+      db.session.add(newVenue)
+      db.session.commit()
+      flash('Venue ' + request.form['name'] + ' was successfully listed!')
+
+  except:
+      print("something went wrong")
+      db.session.rollback()
+      flash('An error occured! Venue ' + request.form['name'] + ' could not be listed')
+  finally:
+      db.session.close()
+
   # TODO: modify data to be the data object returned from db insertion
 
-  # on successful db insert, flash success
-  flash('Venue ' + request.form['name'] + ' was successfully listed!')
+
   # TODO: on unsuccessful db insert, flash an error instead.
   # e.g., flash('An error occurred. Venue ' + data.name + ' could not be listed.')
   # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
