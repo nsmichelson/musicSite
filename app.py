@@ -33,6 +33,18 @@ migrate = Migrate(app,db)
 #----------------------------------------------------------------------------#
 # Models.
 #----------------------------------------------------------------------------#
+class Show(db.Model):
+    __tablename__ = 'show'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    city = db.Column(db.String(120))
+    state = db.Column(db.String(120))
+    address = db.Column(db.String(120))
+    phone = db.Column(db.String(120))
+    image_link = db.Column(db.String(500))
+    facebook_link = db.Column(db.String(120))
+
 
 class Venue(db.Model):
     __tablename__ = 'Venue'
@@ -60,6 +72,7 @@ class Artist(db.Model):
     genres = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
+
 #    shows = db.relationship('Show', backref="Artist",lazy=True)
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
@@ -423,7 +436,8 @@ def create_artist_submission():
     try:
         print("TRYING!!!")
         newArtist = Artist()
-        printed("Created new artist")
+        print("newArtist",newArtist)
+        print("Created new artist")
         newArtist.name = name
         print("Artst name is",newArtist.name)
         newArtist.genres = genres
