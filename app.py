@@ -33,18 +33,6 @@ migrate = Migrate(app,db)
 #----------------------------------------------------------------------------#
 # Models.
 #----------------------------------------------------------------------------#
-class Show(db.Model):
-    __tablename__ = 'show'
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    city = db.Column(db.String(120))
-    state = db.Column(db.String(120))
-    address = db.Column(db.String(120))
-    phone = db.Column(db.String(120))
-    image_link = db.Column(db.String(500))
-    facebook_link = db.Column(db.String(120))
-
 
 class Venue(db.Model):
     __tablename__ = 'Venue'
@@ -57,7 +45,7 @@ class Venue(db.Model):
     phone = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
-#    shows = db.relationship('Show', backref="Venue",lazy=True)
+    shows = db.relationship('Shows', backref="Venue",lazy=True)
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
@@ -72,20 +60,19 @@ class Artist(db.Model):
     genres = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
-
-#    shows = db.relationship('Show', backref="Artist",lazy=True)
+    shows = db.relationship('Shows', backref="Artist",lazy=True)
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 
-#class Shows(db.Model):
-#    __tablename__ = 'Shows'
+class Shows(db.Model):
+    __tablename__ = 'Shows'
 
-#    id = db.Column(db.Integer, primary_key=True)
-#    name = db.Column(db.String)
-#    venue_id = db.Column(db.Integer, db.ForeignKey(Venue.id), nullable=False)
-#    artist_id = db.Column(db.Integer, db.ForeignKey(Artist.id), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    venue_id = db.Column(db.Integer, db.ForeignKey(Venue.id), nullable=False)
+    artist_id = db.Column(db.Integer, db.ForeignKey(Artist.id), nullable=False)
 
 
 #----------------------------------------------------------------------------#
