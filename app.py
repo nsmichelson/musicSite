@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------------#
 
 import json
-import dateutil.parser
+
 import babel
 from flask import Flask, render_template, request, Response, flash, redirect, url_for, jsonify
 from flask_moment import Moment
@@ -80,15 +80,7 @@ class Shows(db.Model):
 # Filters.
 #----------------------------------------------------------------------------#
 
-def format_datetime(value, format='medium'):
-  date = dateutil.parser.parse(value)
-  if format == 'full':
-      format="EEEE MMMM, d, y 'at' h:mma"
-  elif format == 'medium':
-      format="EE MM, dd, y h:mma"
-  return babel.dates.format_datetime(date, format)
 
-app.jinja_env.filters['datetime'] = format_datetime
 
 #return babel.dates.format_datetime(date, format, locale='en')
 
@@ -97,7 +89,7 @@ app.jinja_env.filters['datetime'] = format_datetime
 # Controllers.
 #----------------------------------------------------------------------------#
 
-#db.create_all()
+db.create_all()
 
 @app.route('/')
 def index():
@@ -110,7 +102,18 @@ def index():
 @app.route('/venues')
 def venues():
 
-  print(Venue.query.all()[0].city)
+  print("Testing a join table here")
+
+
+  showArtist = Shows.query.join('Artist').all()
+  print("Show Artist")
+  print(showArtist[0].start_time)
+  print(showArtist[0].venue_id)
+  artistID = showArtist[0].artist_id
+  print(Artist.query.filter(Artist.id==artistID, Shows.id==1)[0].name)
+
+  #doing te queries creates a query object list, 
+  
   # TODO: replace with real venues data.
   return render_template('pages/venues.html', areas = Venue.query.all())
   #       num_shows should be aggregated based on number of upcoming shows per venue.

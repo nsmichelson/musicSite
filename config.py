@@ -13,7 +13,7 @@ DEBUG = True
 #'SQLALCHEMY_TRACK_MODIFICATIONS' = False
 
 # TODO IMPLEMENT DATABASE URL
-SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:Sample@localhost:5432/musicSiteApp'
+SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:postgres@localhost:5432/musicSiteApp'
 
 
 # Connect to the database
