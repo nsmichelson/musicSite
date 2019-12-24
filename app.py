@@ -92,7 +92,6 @@ def format_datetime(value, format='medium'):
 
 app.jinja_env.filters['datetime'] = format_datetime
 
-#return babel.dates.format_datetime(date, format, locale='en')
 
 
 #----------------------------------------------------------------------------#
@@ -158,6 +157,20 @@ def search_venues():
 def show_venue(venue_id):
     venue = Venue.query.get(venue_id)
     joined = Venue.query.join('shows')
+    showData = []
+    showCount = 0
+
+    for show in venue.shows:
+        start_time = Shows.query.filter(Shows.id==show.id,venue.id==venue_id)[0].start_time
+        artistName = Artist.query.filter(Shows.id==show.id, venue.id==venue_id)[0].name
+        print("Artist Name is",artistName)
+        print("Start Time is",start_time)
+        showInfo = {
+        "start_time":start_time,
+        "artist_name":artistName
+        }
+        showData.append(showInfo)
+        showCount+=1
 
     data = {
     "id": venue_id,
@@ -174,9 +187,9 @@ def show_venue(venue_id):
     #"image_link": venue.image_link,
     #"past_shows": venue.past_shows,
     #"upcoming_shows":venue.shows,
-    #"upcoming_shows": venue.upcoming_shows,
+    "upcoming_shows": showData,
     #"past_shows_count": venue.past_shows_count,
-    #"upcoming_shows_count": venue.upcoming_shows_count
+    "upcoming_shows_count": showCount
     }
     return render_template('pages/show_venue.html', venue=data)
   # shows the venue page with the given venue_id
@@ -460,7 +473,7 @@ def create_artist_submission():
 
 @app.route('/shows')
 def shows():
-#there's probably a more efficient way to do this... with a join table or something
+#is there a more efficient way to do this???????
     showData = Shows.query.all()
     data = []
     for showw in showData:
@@ -482,8 +495,6 @@ def shows():
         data.append(show)
     #print("This is the showData",showData)
         print("Testing",)
-    #need to do a join table
-    #one option is to create arrays with the artist names and venue names and feed those as variables
     return render_template('pages/shows.html', shows=data)
 
 
