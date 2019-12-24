@@ -76,6 +76,8 @@ class Shows(db.Model):
     start_time = db.Column(db.Date, nullable=True)
 
 
+
+
 #----------------------------------------------------------------------------#
 # Filters.
 #----------------------------------------------------------------------------#
@@ -155,6 +157,7 @@ def search_venues():
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
     venue = Venue.query.get(venue_id)
+    joined = Venue.query.join('shows')
 
     data = {
     "id": venue_id,
@@ -170,6 +173,7 @@ def show_venue(venue_id):
     #"seeking_description": venue.seeking_description,
     #"image_link": venue.image_link,
     #"past_shows": venue.past_shows,
+    #"upcoming_shows":venue.shows,
     #"upcoming_shows": venue.upcoming_shows,
     #"past_shows_count": venue.past_shows_count,
     #"upcoming_shows_count": venue.upcoming_shows_count
@@ -282,6 +286,22 @@ def search_artists():
 @app.route('/artists/<int:artist_id>')
 def show_artist(artist_id):
     artist_data = Artist.query.get(artist_id)
+    upcoming_shows= []
+    show_count = 0
+    for show in artist_data.shows:
+        venueName = Venue.query.filter(Shows.id==show.id,Artist.id==artist_id)[0].name
+        showData = {
+        "VenueName": venueName,
+        "start_time":show.start_time
+        }
+        print("Show Data for this show is",showData)
+        upcoming_shows.append(showData)
+        print(upcoming_shows)
+        print("Show is",show.id)
+        show_count+=1
+    #print(Artist.query.filter(Shows.id==artistID, Shows.id==1)[0].name)
+
+
     data={
     "id": artist_data.id,
     "name": artist_data.name,
@@ -295,9 +315,9 @@ def show_artist(artist_id):
     #"seeking_description": artist_data.seeking_description,
     #"image_link": artist_data.image_link,
     #"past_shows": artist_data.past_shows,
-    #"upcoming_shows": artist_data.upcoming_shows,
+    "upcoming_shows": upcoming_shows,
     #"past_shows_count": artist_data.past_shows_count,
-    #"upcoming_shows_count": artist_data.upcoming_shows_count
+    "upcoming_shows_count": show_count
     }
     return render_template('pages/show_artist.html', artist=data)
 
@@ -440,9 +460,31 @@ def create_artist_submission():
 
 @app.route('/shows')
 def shows():
+#there's probably a more efficient way to do this... with a join table or something
     showData = Shows.query.all()
-
-    return render_template('pages/shows.html', shows=showData)
+    data = []
+    for showw in showData:
+        show = {
+        "venue_id":90,
+        "venue_name":'',
+        "artist_id":90,
+        "artist_name":'',
+        "start_time":''
+        }
+        show['venue_id'] = showw.venue_id
+        print("SO FAR SO GOOD")
+        show['venue_name'] = Venue.query.get(showw.venue_id).name
+        print("This is the venue name",show['venue_name'])
+        show['artist_id'] = showw.artist_id
+        show['artist_name'] = Artist.query.get(showw.artist_id).name
+        #show.artist_image_link:Artist.query.get(showw.artist_id).artist_image_link
+        show['start_time'] = showw.start_time
+        data.append(show)
+    #print("This is the showData",showData)
+        print("Testing",)
+    #need to do a join table
+    #one option is to create arrays with the artist names and venue names and feed those as variables
+    return render_template('pages/shows.html', shows=data)
 
 
 
