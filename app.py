@@ -133,9 +133,27 @@ def venues():
       theArea = areas[venueOn]
       theArea['venues'].append(venue.name)
       print("the venues of the area are:",theArea['venues'])
+  data = []
   print("areas are",areas)
   distinct_city_state = Venue.query.distinct(Venue.city, Venue.state).all()
-  data = [dcs.filiter_venue_on_city_state for dcs in distinct_city_state]
+  print(Artist.query.filter(Artist.id==artistID, Shows.id==1)[0].name)
+  for dcs in distinct_city_state:
+    print("dcs is",dcs)
+    print("dcs city",dcs.city)
+    print("dcs state",dcs.state)
+    dcs.venues = Venue.query.filter(Venue.city==dcs.city,Venue.state==dcs.state)
+    data.append(dcs)
+     
+
+   # print("Boom",dcs.filter(Venue.city==dcs.city,Venue.state==dcs.state))
+    #thingToAdd = Venue.query.filter(Venue.city==dcs.city,Venue.state==dcs.state)
+   # for venue in thingToAdd:
+     # data.dcs.venues.append(venue)
+    #print("thing to add",thingToAdd)
+    #data.append(thingToAdd)
+  #Venue.query.filter()
+
+  #data = [dcs.filiter_venue_on_city_state for dcs in distinct_city_state]
 
 
   #return the page to direct to and the data to populate that page
