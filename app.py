@@ -5,7 +5,7 @@
 import json
 
 import babel
-from flask import Flask, render_template, request, Response, flash, redirect, url_for, jsonify
+from flask import (Flask, render_template, request, Response, flash, redirect, url_for, jsonify)
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 import logging
@@ -39,6 +39,7 @@ class Venue(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
+    genres = db.Column(db.String(120))
     city = db.Column(db.String(120))
     state = db.Column(db.String(120))
     address = db.Column(db.String(120))
@@ -101,45 +102,50 @@ def index():
 
 @app.route('/venues')
 def venues():
-
-  print("Testing a join table here")
-
-
   showArtist = Shows.query.join('Artist').all()
-  print("Show Artist")
-  print(showArtist[0].start_time)
-  print(showArtist[0].venue_id)
-  artistID = showArtist[0].artist_id
+  print("attempt at distinct")
+  print(Venue.query.distinct(Venue.city, Venue.state).all())
+  artistID = showArtist[1].artist_id
   print(Artist.query.filter(Artist.id==artistID, Shows.id==1)[0].name)
+  print("This is what is being sent")
+  VenueArray = Venue.query.order_by(Venue.city)
+  for city in VenueArray:
+    print("city",city)
+    print(city.city)
+  #VenueArray = Venue.query.all().order_By('city')
+  print("VenueArray is",VenueArray)
+  areas = []
+  venueOn = -1
+  areaOptions=[]
+  for venue in VenueArray:
+    if venue.city not in areaOptions:
+      areaOptions.append(venue.city)
+      print("This city does not yet have an area",venue.city)
+      venueOn += 1
+      newArea = {
+        "city": venue.city,
+        "state": venue.state,
+        'venues': []    
+        }
+      newArea['venues'].append(venue.name)
+      areas.append(newArea)
+    else:
+      theArea = areas[venueOn]
+      theArea['venues'].append(venue.name)
+      print("the venues of the area are:",theArea['venues'])
+  print("areas are",areas)
+  distinct_city_state = Venue.query.distinct(Venue.city, Venue.state).all()
+  data = [dcs.filiter_venue_on_city_state for dcs in distinct_city_state]
 
-  #doing te queries creates a query object list, 
-  
-  # TODO: replace with real venues data.
-  return render_template('pages/venues.html', areas = Venue.query.all())
-  #       num_shows should be aggregated based on number of upcoming shows per venue.
 
-      #above need to look up the redux for finding something LIKE the search term
-    # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
-    # seach for Hop should return "The Musical Hop".
-    # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
-
-      #likeSearch = '%' + search_term + '%'
-      #print("This is the like search result",likeSearch)
-      #response_results = Venue.query.filter_by(Venue.name.like(likeSearch))
-
+  #return the page to direct to and the data to populate that page
+  return render_template('pages/venues.html', areas = data)
+ 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
     #get the search term from the post request body
     search_term = request.form.get('search_term')
-    # set up the response to have jsonified queries of something like the search term
-#    response_results = Venue.query.filter_by(name=search_term | ))
-
-    #queryArray = search_term.split(" ")
-    #print("the query array is",queryArray)
-
-
-    #response_results = Venue.query.filter(Venue.name.in_(queryArray))
-
+ 
     likeSearch = '%' + search_term + '%'
     print("This is the like search result",likeSearch)
     response_results = Venue.query.filter(Venue.name.like(likeSearch))
@@ -162,7 +168,7 @@ def show_venue(venue_id):
     data = {
     "id": venue_id,
     "name": venue.name,
-    #"genres": venue.genres,
+    "genres": venue.genres,
     "address": venue.address,
     "city": venue.city,
     "state": venue.state,
