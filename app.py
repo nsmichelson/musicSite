@@ -107,58 +107,20 @@ def venues():
   print(Venue.query.distinct(Venue.city, Venue.state).all())
   artistID = showArtist[1].artist_id
   print(Artist.query.filter(Artist.id==artistID, Shows.id==1)[0].name)
-  print("This is what is being sent")
-  VenueArray = Venue.query.order_by(Venue.city)
-  for city in VenueArray:
-    print("city",city)
-    print(city.city)
-  #VenueArray = Venue.query.all().order_By('city')
-  print("VenueArray is",VenueArray)
   areas = []
-  venueOn = -1
-  areaOptions=[]
-  for venue in VenueArray:
-    if venue.city not in areaOptions:
-      areaOptions.append(venue.city)
-      print("This city does not yet have an area",venue.city)
-      venueOn += 1
-      newArea = {
-        "city": venue.city,
-        "state": venue.state,
-        'venues': []    
-        }
-      newArea['venues'].append(venue.name)
-      areas.append(newArea)
-    else:
-      theArea = areas[venueOn]
-      theArea['venues'].append(venue.name)
-      print("the venues of the area are:",theArea['venues'])
-  data = []
-  print("areas are",areas)
   distinct_city_state = Venue.query.distinct(Venue.city, Venue.state).all()
   print(Artist.query.filter(Artist.id==artistID, Shows.id==1)[0].name)
   for dcs in distinct_city_state:
     print("dcs is",dcs)
     print("dcs city",dcs.city)
     print("dcs state",dcs.state)
+    #print("dcs venues is",dcs.venues)
     dcs.venues = Venue.query.filter(Venue.city==dcs.city,Venue.state==dcs.state)
-    data.append(dcs)
+    areas.append(dcs)
      
-
-   # print("Boom",dcs.filter(Venue.city==dcs.city,Venue.state==dcs.state))
-    #thingToAdd = Venue.query.filter(Venue.city==dcs.city,Venue.state==dcs.state)
-   # for venue in thingToAdd:
-     # data.dcs.venues.append(venue)
-    #print("thing to add",thingToAdd)
-    #data.append(thingToAdd)
-  #Venue.query.filter()
-
-  #data = [dcs.filiter_venue_on_city_state for dcs in distinct_city_state]
-
-
-  #return the page to direct to and the data to populate that page
-  return render_template('pages/venues.html', areas = data)
+  return render_template('pages/venues.html', areas = areas)
  
+
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
     #get the search term from the post request body
@@ -168,9 +130,7 @@ def search_venues():
     print("This is the like search result",likeSearch)
     response_results = Venue.query.filter(Venue.name.like(likeSearch))
 
-
     print("response_results is",response_results)
-
 
     response={
     "results": response_results
@@ -182,6 +142,7 @@ def search_venues():
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
     venue = Venue.query.get(venue_id)
+    print("the genres for this venue are",venue.genres)
 
     data = {
     "id": venue_id,
