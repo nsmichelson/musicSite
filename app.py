@@ -57,7 +57,7 @@ class Venue(db.Model):
     facebook_link = db.Column(db.String(120))
     shows = db.relationship('Shows', backref="Venue",lazy=True)
 
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
+
 
 class Artist(db.Model):
     __tablename__ = 'Artist'
@@ -202,30 +202,29 @@ def create_venue_submission():
 
 @app.route('/venues/<venue_id>', methods=['DELETE'])
 def delete_venue(venue_id):
-  # TODO: Complete this endpoint for taking a venue_id, and using
-  # SQLAlchemy ORM to delete a record. Handle cases where the session commit could fail.
-
-  # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
-  # clicking that button delete it from the db then redirect the user to the homepage
-  return None
+  try:
+      venueToDelete = Venue.query.filter(Venue.id == venue_id)
+      venueToDelete.delete()
+      db.session.commit()
+      flash("deleted Venue!")    
+  except:
+      flash("Something went wrong!  Couldn't delete Venue {}".format(venue_id))
+      db.session.rollback()
+  finally:
+      db.session.close()
+ 
+  return render_template('pages/home.html')
 
 #  Artists
 #  ----------------------------------------------------------------
 @app.route('/artists')
 def artists():
-  # TODO: replace with real data returned from querying the database
-
-  print(Venue.query.all()[0].city)
-  # TODO: replace with real venues data.
   return render_template('pages/artists.html', artists = Artist.query.all())
   #       num_show
 
 
 @app.route('/artists/search', methods=['POST'])
 def search_artists():
-  # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
-  # seach for "A" should return "Guns N Petals", "Matt Quevado", and "The Wild Sax Band".
-  # search for "band" should return "The Wild Sax Band".
   search_term = request.form.get('search_term')
   likeSearch = '%' + search_term + '%'
   artist_results = Artist.query.filter(Artist.name.like(likeSearch))
@@ -240,7 +239,8 @@ def search_artists():
 
   response= {
   "count":count,
-  "data": data}
+  "data": data
+  }
 
   return render_template('pages/search_artists.html', results=response, search_term=request.form.get('search_term', ''))
 
